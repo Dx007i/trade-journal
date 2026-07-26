@@ -586,6 +586,20 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== 防缓存：给所有 GET 请求自动加时间戳 =====
+(function() {
+  const origFetch = window.fetch;
+  window.fetch = function(input, init) {
+    // 只处理 GET 请求（无 init 或 method 为 GET）
+    const method = (init && init.method) ? init.method.toUpperCase() : 'GET';
+    if (method === 'GET' && typeof input === 'string' && input.startsWith('/api/')) {
+      const sep = input.includes('?') ? '&' : '?';
+      input = input + sep + '_t=' + Date.now();
+    }
+    return origFetch.call(this, input, init);
+  };
+})();
+<script>
 // ============================================================
 // 状态
 // ============================================================
